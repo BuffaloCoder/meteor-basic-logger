@@ -11,49 +11,40 @@ var BaseLogger;
 		'trace'
 	];
 
-	function checkLevel (level) {
-		return this.levels.indexOf(level) <= this.levels.indexOf(this.logLevel)		
-	}
-
+	// TODO attempt to use the proper console.log features (info, error, log) when possible
 	var basePublicLoggingMethods = {
-		log: function(){
-			var args = arguments;
-			for(var i = 0; i < args.length; i++){
-				if(console) console.log(args[i]);
-			}
+		log: function(level, args){
+			if(level <= this._logLevel)
+				for(var i = 0; i < args.length; i++){
+					if(console) console.log(args[i]);
+				}
 		},
 		fatal: function(){
-			if(checkLevel.call(this, 'fatal'))
-				this.log.apply(this, arguments);	
+			this.log(1, arguments);	
 		},
 		error: function(){
-			if(checkLevel.call(this, 'error'))
-				this.log.apply(this, arguments);	
+			this.log(2, arguments);		
 		},
 		warn: function(){
-			if(checkLevel.call(this, 'warn'))
-				this.log.apply(this, arguments);
+			this.log(3, arguments);	
 		},
 		info: function(){
-			if(checkLevel.call(this, 'info'))
-				this.log.apply(this, arguments);
+			this.log(4, arguments);	
 		},
 		debug: function(){
-			if(checkLevel.call(this, 'debug'))
-				this.log.apply(this, arguments);
+			this.log(5, arguments);	
 		},
 		trace: function(){
-			if(checkLevel.call(this, 'trace'))
-				this.log.apply(this, arguments);	
+			this.log(6, arguments);		
 		}
 	}
 
-	BaseLogger = function(level){
-		var self = this;
+	BaseLogger = function(level) {
 		// Follows log4j levels, can use numbers instead as well
 		this.levels = levels;
 		this.logLevel = level || 'info';
+		this._logLevel = this.levels.indexOf(this.logLevel);
 		_.extend(this, basePublicLoggingMethods);
 
-	}
+	};
 })();
