@@ -10,41 +10,55 @@ var BaseLogger;
     'debug',
     'trace'
   ];
-
-  // TODO attempt to use the proper console.log features (info, error, log) when possible
-  var basePublicLoggingMethods = {
-    log: function(level, args){
-      if(level <= this._logLevel)
-        for(var i = 0; i < args.length; i++){
-          if(console) console.log(args[i]);
-        }
-    },
-    fatal: function(){
-      this.log(1, arguments); 
-    },
-    error: function(){
-      this.log(2, arguments);   
-    },
-    warn: function(){
-      this.log(3, arguments); 
-    },
-    info: function(){
-      this.log(4, arguments); 
-    },
-    debug: function(){
-      this.log(5, arguments); 
-    },
-    trace: function(){
-      this.log(6, arguments);   
-    }
+  var curLevel;
+  var _log = function(level, args){
+    curLevel = level;
+    if(level <= this._logLevel && console)
+      this.log.apply(this, args);
   }
 
+  var basePublicLoggingMethods = {
+    logLevel: 'info',
+    _logLevel: levels.indexOf(this.logLevel),
+    log: function(){
+      for(var i = 0; i < arguments.length; i++){
+        if(curLevel && curLevel <= 2) console.error(arguments[i]);
+        else if(curLevel && curLevel === 4) console.info(arguments[i]);
+        else console.log(arguments[i])
+      }
+      curLevel = null;
+    },
+    fatal: function(){
+      _log.call(this, 1, arguments); 
+    },
+    error: function(){
+      _log.call(this, 2, arguments);   
+    },
+    warn: function(){
+      _log.call(this, 3, arguments); 
+    },
+    info: function(){
+      _log.call(this, 4, arguments); 
+    },
+    debug: function(){
+      _log.call(this, 5, arguments); 
+    },
+    trace: function(){
+      _log.call(this, 6, arguments);   
+    }
+  };
+
   BaseLogger = function(level) {
+    var obj = Object.create(basePublicLoggingMethods);
     // Follows log4j levels, can use numbers instead as well
-    this.levels = levels;
-    this.logLevel = level || 'info';
-    this._logLevel = this.levels.indexOf(this.logLevel);
-    _.extend(this, basePublicLoggingMethods);
+    obj.levels = levels;
+    if(level && obj.levels.indexOf(level) >= 0){
+      obj.logLevel = level;
+      // Internally maintained and used logLevel 
+      // TODO on set, modify the _logLevel as well, then remove this line
+      obj._logLevel = obj.levels.indexOf(obj.logLevel);
+    }
+    return obj;
 
   };
 })();

@@ -1,5 +1,5 @@
-var cLogger;
+var log;
 (function(){
   var debugSettings = (Meteor.settings.public && Meteor.settings.public.debug) || {logLevel:'info'};
-  cLogger = new BaseLogger(debugSettings.logLevel);
+  log = new BaseLogger(debugSettings.logLevel);
 })();

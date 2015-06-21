@@ -16,8 +16,10 @@ Package.onUse(function(api) {
   api.addFiles('logger.js');
   api.addFiles('loggerClientSetup.js');
   api.addFiles('loggerServerSetup.js');
-  api.export('sLogger', 'server');
-  api.export('cLogger', 'client');
+  api.export('BaseLogger'); // handed to both in case of further modification
+  // log seems to be better suited towards client, while Logger will seem more familiar to long time coders
+  api.export('Logger', 'server');
+  api.export('log', 'client');
 });
 
 Package.onTest(function(api) {
