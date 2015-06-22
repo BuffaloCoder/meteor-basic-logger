@@ -1,8 +1,26 @@
 // Write your package code here!
 var BaseLogger;
 (function(){
-  
-  var basePublicLoggingMethods = {
+  BaseLogger = function(level) {
+    if(Object.defineProperty)
+      // Follows log4j levels, can use numbers instead as well
+      Object.defineProperty(this, "logLevel", {
+        get: function() {
+          return this.levels[this._logLevel]; 
+        },
+        set: function(level) { 
+          this._logLevel = this.levels.indexOf(level);
+        }
+      });
+    else 
+      this.logLevel = function(newLevel){ this._logLevel = this.levels.indexOf(level)}
+    if(level && this.levels.indexOf(level) >= 0)
+      this.logLevel = level;
+    else
+      this.logLevel = 'info';
+  };
+
+  BaseLogger.prototype = {
     levels:[
       'off',
       'fatal',
@@ -54,27 +72,7 @@ var BaseLogger;
   */
   if(Function.prototype.bind)
     for(key in console)
-      if(typeof console[key] === 'function' && !basePublicLoggingMethods.hasOwnProperty(key))
-        basePublicLoggingMethods[key] = console[key].bind(console);
+      if(typeof console[key] === 'function' && !BaseLogger.hasOwnProperty(key))
+        BaseLogger[key] = console[key].bind(console);
 
-  BaseLogger = function(level) {
-    var logger = Object.create(basePublicLoggingMethods);
-    if(Object.defineProperty)
-      // Follows log4j levels, can use numbers instead as well
-      Object.defineProperty(logger, "logLevel", {
-        get: function() {
-          return this.levels[this._logLevel]; 
-        },
-        set: function(level) { 
-          this._logLevel = this.levels.indexOf(level);
-        }
-      });
-    else 
-      logger.logLevel = function(newLevel){ this._logLevel = this.levels.indexOf(level)}
-    if(level && logger.levels.indexOf(level) >= 0)
-      logger.logLevel = level;
-    else
-      logger.logLevel = 'info';
-    return logger;
-  };
 })();
