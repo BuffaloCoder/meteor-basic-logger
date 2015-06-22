@@ -1,6 +1,7 @@
 // Write your package code here!
 var BaseLogger;
 (function(){
+  
   var basePublicLoggingMethods = {
     levels:[
       'off',
@@ -47,10 +48,14 @@ var BaseLogger;
       this._log( 6, arguments);   
     }
   };
-  // Initializes it with all console functions that someone may need to call
-  for(key in console)
-    if(typeof console[key] === 'function' && !basePublicLoggingMethods.hasOwnProperty(key))
-      basePublicLoggingMethods[key] = console[key].bind(console);
+  /* 
+  * Initializes it with all console functions that someone may need to call,
+  *  though will not fail if bind method does not exist (but will not have those funcitons either)
+  */
+  if(Function.prototype.bind)
+    for(key in console)
+      if(typeof console[key] === 'function' && !basePublicLoggingMethods.hasOwnProperty(key))
+        basePublicLoggingMethods[key] = console[key].bind(console);
 
   BaseLogger = function(level) {
     var logger = Object.create(basePublicLoggingMethods);
